@@ -18,7 +18,3 @@ export const getFirstListFailed = () => ({
 });
 
 
-export const sendDataFrom = () => ({
-  type: GET_FIRST_LIST_REQUEST
-});
-
