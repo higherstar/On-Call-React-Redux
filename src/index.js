@@ -1,13 +1,13 @@
 import React from "react";
 import ReactDOM from 'react-dom';
 import { Provider } from "react-redux";
-import store from "./js/store/index";
+import {configureStore} from "./js/Redux/store";
 import App from "./js/components/App";
 // if you're in create-react-app import the files as:
 // import store from "./js/store/index";
 // import App from "./js/components/App.jsx";
 ReactDOM.render(
-  <Provider store={store}>
+  <Provider store={configureStore()}>
     <App />
   </Provider>,
   // The target element might be either root or app,
