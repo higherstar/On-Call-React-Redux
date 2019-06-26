@@ -1,10 +1,17 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
-import { getFirstList } from "../Redux/common/actions";
 import { Select, Button, Input } from 'antd';
-import './App.css';
 import 'antd/dist/antd.css';
+
+import {
+  getFirstList,
+  getSecondList,
+  getThirdList,
+  getForthList,
+  submitData
+} from "../Redux/common/actions";
+import './App.css';
 
 class App extends Component {
   componentDidMount() {
@@ -16,122 +23,185 @@ class App extends Component {
     select2: false,
     select3: false,
     select4: false,
-    select5: false,
     value1: '',
     value2: '',
     value3: '',
     value4: '',
     value5: ''
-  }
+  };
 
-  onChange1(value) {
+  onChange = (field) => value => {
     if (value !== '') {
-      this.setState({ select1: true, value1: value })
+      this.setState({
+        [`select${field}`]: true,
+        [`value${field}`]: value,
+      });
+
+      let action = null;
+      let params = {};
+      switch (field) {
+        case 1:
+          action = this.props.getSecondList;
+          params.first = value;
+          break;
+        case 2:
+          action = this.props.getThirdList;
+          params.first = this.state.value1;
+          params.second = value;
+          break;
+        case 3:
+          action = this.props.getForthList;
+          params.first = this.state.value1;
+          params.second = this.state.value2;
+          params.third = value;
+          break;
+        default:
+          break;
+      }
+
+      if (action) {
+        action(params);
+      }
     }
-  }
+  };
 
-  onChange2(value1) {
-    if (value1 !== '') {
-      this.setState({ select2: true, value2: value1 })
+  onChangeInput = (e) => {
+    this.setState({
+      value5: e.target.value,
+    })
+  };
+
+  onSubmit = () => {
+    const {
+      value1,
+      value2,
+      value3,
+      value4,
+      value5
+    } = this.state;
+
+    if (value1 && value2 && value3 && value4 && value5) {
+      this.props.submitData({
+        first: value1,
+        second: value2,
+        third: value3,
+        forth: value4,
+        other: value5
+      });
     }
-  }
-
-  onChange3(value1) {
-    if (value1 !== '') {
-      this.setState({ select3: true, value3: value1 })
-    }
-  }
-
-  onChange4(value1) {
-    if (value1 !== '') {
-      this.setState({ select4: true, value4: value1 })
-    }
-  }
-
-  onChange5(value1) {
-    if (value1.target.value !== '') {
-      this.setState({ select5: true, value5: value1.target.value })
-    }
-  }
-
-  onclickSubmit() {
-
-  }
+  };
 
   render() {
-    const { isLoadingList, firstList } = this.props;
-    if (isLoadingList) {
-      return <div>Loading...</div>;
-    }
+    const {
+      isLoadingList,
+      firstList,
+      secondList,
+      thirdList,
+      forthList
+    } = this.props;
+
+    // if (isLoadingList) {
+    //   return <div>Loading...</div>;
+    // }
+
+    const {
+      select1,
+      select2,
+      select3,
+      select4,
+      value1,
+      value2,
+      value3,
+      value4,
+      value5
+    } = this.state;
+
     return (
       <div className="parent_div">
-        <div className='group_dropdown'>
+        <div className="group_dropdown">
           <p>First DropDown</p>
           <Select
             showSearch
             style={{ width: 300 }}
             placeholder="Select a person"
-            onChange={(value) => this.onChange1(value)}>
+            value={value1}
+            onChange={this.onChange(1)}
+          >
             {
               firstList.map((item, key) => (
-                <Select.Option value={item.name} key={key}>{item.name}</Select.Option>
+                <Select.Option value={item.value} key={key}>{item.name}</Select.Option>
               ))
             }
           </Select>
         </div>
-        <div className='group_dropdown'>
+        <div className="group_dropdown">
           <p>Second DropDown</p>
           <Select
             showSearch
             style={{ width: 300 }}
             placeholder="Select a person"
-            disabled={!this.state.select1}
-            onChange={(value1) => this.onChange2(value1)}>
+            disabled={!select1}
+            value={value2}
+            onChange={this.onChange(2)}
+          >
             {
-              firstList && firstList.map((item, key) => (
-                <Select.Option value={item.name + '1'} key={key}>{item.name}</Select.Option>
+              secondList && secondList.map((item, key) => (
+                <Select.Option value={item.value} key={key}>{item.name}</Select.Option>
               ))
             }
           </Select>
         </div>
-        <div className='group_dropdown'>
-          <p>Second DropDown</p>
+        <div className="group_dropdown">
+          <p>Third DropDown</p>
           <Select
             showSearch
             style={{ width: 300 }}
             placeholder="Select a person"
-            disabled={!this.state.select2}
-            onChange={(value1) => this.onChange3(value1)}>
+            disabled={!select2}
+            value={value3}
+            onChange={this.onChange(3)}
+          >
             {
-              firstList && firstList.map((item, key) => (
-                <Select.Option value={item.name + '1'} key={key}>{item.name}</Select.Option>
+              thirdList && thirdList.map((item, key) => (
+                <Select.Option value={item.value} key={key}>{item.name}</Select.Option>
               ))
             }
           </Select>
         </div>
-        <div className='group_dropdown'>
-          <p>Second DropDown</p>
+        <div className="group_dropdown">
+          <p>Forth DropDown</p>
           <Select
             showSearch
             style={{ width: 300 }}
             placeholder="Select a person"
-            disabled={!this.state.select3}
-            onChange={(value1) => this.onChange4(value1)}>
+            disabled={!select3}
+            value={value4}
+            onChange={this.onChange(4)}
+          >
             {
-              firstList && firstList.map((item, key) => (
-                <Select.Option value={item.name + '1'} key={key}>{item.name}</Select.Option>
+              forthList && forthList.map((item, key) => (
+                <Select.Option value={item.value} key={key}>{item.name}</Select.Option>
               ))
             }
           </Select>
         </div>
-        <div className='group_dropdown'>
+        <div className="group_dropdown">
           <p>Input to be POSTed with the other data</p>
-          <Input placeholder="Enter Some text" disabled={!this.state.select4} style={{ width: 300 }}
-                 onChange={(value1) => this.onChange5(value1)} />
+          <Input
+            placeholder="Enter Some text"
+            style={{ width: 300 }}
+            onChange={this.onChangeInput}
+          />
         </div>
         <div>
-          <Button type="primary" disabled={!this.state.select5} style={{ width: 300 }}
-                  onClick={() => this.onclickSubmit}>Submit</Button>
+          <Button
+            type="primary"
+            disabled={!(select4 && value5)}
+            style={{ width: 300 }}
+            onClick={this.onSubmit}
+          >
+            Submit
+          </Button>
         </div>
       </div>
     );
@@ -141,12 +211,19 @@ class App extends Component {
 const mapStateToProps = (state) => ({
   isLoadingList: state.common.isLoading,
   firstList: state.common.firstList,
+  secondList: state.common.secondList,
+  thirdList: state.common.thirdList,
+  forthList: state.common.forthList,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
   ...bindActionCreators({
     getFirstList,
+    getSecondList,
+    getThirdList,
+    getForthList,
+    submitData
   }, dispatch)
 });
 
